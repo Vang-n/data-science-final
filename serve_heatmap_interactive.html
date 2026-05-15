@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Serve Heatmap</title>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0d2137;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px 16px;
+      min-height: 100vh;
+    }
+    h1 {
+      color: #ffffff;
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+      text-align: center;
+      letter-spacing: 0.04em;
+    }
+    .subtitle {
+      color: #7fb3d3;
+      font-size: 0.82rem;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    #chart { width: 100%; max-width: 860px; }
+    .note {
+      color: #5d8aa8;
+      font-size: 0.75rem;
+      margin-top: 14px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>Serve Heatmap — First vs. Second Serve</h1>
+  <p class="subtitle">Viewing from server's perspective looking across the net · Hover points for exact coordinates</p>
+  <div id="chart"></div>
+  <p class="note">Hot zones show where serves cluster most. Ideal placement: wide corners of each box.</p>
+
+  <script>
+    // ─── COURT CONSTANTS ─────────────────────────────────────────────
+    const NET_Y     = 11.89;
+    const SVC_Y     = 5.49;
+    const LEFT_X    = -4.115;
+    const RIGHT_X   =  4.115;
+    const MID_X     =  0;
+
+    // ─── PASTE YOUR DATA HERE ────────────────────────────────────────
+    // Replace these arrays with your actual serve data exported from Colab.
+    // In Colab, run:
+    //   first_in  = serves_in[serves_in['Type']=='first_serve'][['Bounce (x)','Bounce (y)']].dropna()
+    //   second_in = serves_in[serves_in['Type']=='second_serve'][['Bounce (x)','Bounce (y)']].dropna()
+    //   print(first_in.to_json(orient='split'))
+    //   print(second_in.to_json(orient='split'))
+    // Then paste the x/y arrays below.
+    //
+    // ── SAMPLE DATA (replace with yours) ─────────────────────────────
+    function makeFakeServes(n, bias_x, seed) {
+      // simple seeded-ish pseudo-random for demo — delete when you paste real data
+      const pts = { x: [], y: [] };
+      let r = seed;
+      const rand = () => { r = (r * 16807 + 0) % 2147483647; return (r - 1) / 2147483646; };
+      for (let i = 0; i < n; i++) {
+        const u1 = rand(), u2 = rand();
+        const z1 = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+        const z2 = Math.sqrt(-2 * Math.log(u1)) * Math.sin(2 * Math.PI * u2);
+        pts.x.push(bias_x + z1 * 1.3);
+        pts.y.push(8.5 + z2 * 1.1);
+      }
+      return pts;
+    }
+    const firstServe  = makeFakeServes(90,  -0.8, 42);
+    const secondServe = makeFakeServes(55,   0.4, 99);
+    // ─────────────────────────────────────────────────────────────────
+
+    // ─── COURT SHAPE HELPERS ─────────────────────────────────────────
+    function courtShapes(xref, yref) {
+      const w = (color, x0, y0, x1, y1, fill = 'rgba(0,0,0,0)') => ({
+        type: 'rect', xref, yref, layer: 'below',
+        x0, y0, x1, y1,
+        fillcolor: fill,
+        line: { color, width: 2 }
+      });
+      const l = (color, x0, y0, x1, y1, width = 2) => ({
+        type: 'line', xref, yref, layer: 'below',
+        x0, y0, x1, y1,
+        line: { color, width }
+      });
+
+      return [
+        // Court fill
+        w('white', LEFT_X, SVC_Y, RIGHT_X, NET_Y, '#1e4d6b'),
+        // Net line (top, since y is inverted)
+        l('#ffffff', LEFT_X, NET_Y, RIGHT_X, NET_Y, 3),
+        // Service line (bottom)
+        l('#ffffff', LEFT_X, SVC_Y, RIGHT_X, SVC_Y),
+        // Left sideline
+        l('#ffffff', LEFT_X, SVC_Y, LEFT_X, NET_Y),
+        // Right sideline
+        l('#ffffff', RIGHT_X, SVC_Y, RIGHT_X, NET_Y),
+        // Center line
+        l('#ffffff', MID_X, SVC_Y, MID_X, NET_Y, 1.5),
+      ];
+    }
+
+    // ─── BUILD TRACES ─────────────────────────────────────────────────
+    function makeTraces(data, xaxis, yaxis, name) {
+      return [
+        {
+          type: 'histogram2dcontour',
+          x: data.x,
+          y: data.y,
+          colorscale: 'YlOrRd',
+          reversescale: false,
+          showscale: false,
+          ncontours: 16,
+          contours: { coloring: 'fill' },
+          line: { width: 0 },
+          opacity: 0.85,
+          hoverinfo: 'skip',
+          xaxis, yaxis
+        },
+        {
+          type: 'scatter',
+          x: data.x,
+          y: data.y,
+          mode: 'markers',
+          marker: { color: 'rgba(255,255,255,0.45)', size: 5, line: { color: 'rgba(255,255,255,0.15)', width: 0.5 } },
+          name,
+          hovertemplate: `<b>${name}</b><br>X: %{x:.2f}<br>Y: %{y:.2f}<extra></extra>`,
+          xaxis, yaxis
+        }
+      ];
+    }
+
+    const traces = [
+      ...makeTraces(firstServe,  'x',  'y',  'First Serve'),
+      ...makeTraces(secondServe, 'x2', 'y2', 'Second Serve'),
+    ];
+
+    // ─── ANNOTATIONS (labels inside chart) ───────────────────────────
+    function courtAnnotations(xref, yref) {
+      const a = (text, x, y, size = 10) => ({
+        text, xref, yref, x, y,
+        showarrow: false,
+        font: { color: 'rgba(255,255,255,0.75)', size },
+        xanchor: 'center', yanchor: 'middle'
+      });
+      return [
+        a('DEUCE SIDE', -2.1, SVC_Y - 0.45, 9),
+        a('AD SIDE',     2.1, SVC_Y - 0.45, 9),
+        a('NET',         0,   NET_Y + 0.35, 9),
+      ];
+    }
+
+    // subplot titles
+    const subplotTitles = [
+      { text: `First Serve <span style="color:#7fb3d3;font-size:0.85em">(n=${firstServe.x.length})</span>`,
+        xref: 'paper', yref: 'paper', x: 0.22, y: 1.04,
+        showarrow: false, font: { color: 'white', size: 14 }, xanchor: 'center' },
+      { text: `Second Serve <span style="color:#7fb3d3;font-size:0.85em">(n=${secondServe.x.length})</span>`,
+        xref: 'paper', yref: 'paper', x: 0.78, y: 1.04,
+        showarrow: false, font: { color: 'white', size: 14 }, xanchor: 'center' },
+    ];
+
+    const layout = {
+      paper_bgcolor: '#0d2137',
+      plot_bgcolor:  '#0d2137',
+      showlegend: false,
+      height: 520,
+      margin: { t: 50, b: 20, l: 20, r: 20 },
+
+      // ── Left subplot axes ──
+      xaxis:  { range: [LEFT_X - 0.8, RIGHT_X + 0.8], showgrid: false, zeroline: false, visible: false, domain: [0, 0.46] },
+      yaxis:  { range: [NET_Y + 0.8, SVC_Y - 0.8],   showgrid: false, zeroline: false, visible: false,  // inverted!
+                scaleanchor: 'x',  scaleratio: 1 },
+
+      // ── Right subplot axes ──
+      xaxis2: { range: [LEFT_X - 0.8, RIGHT_X + 0.8], showgrid: false, zeroline: false, visible: false, domain: [0.54, 1] },
+      yaxis2: { range: [NET_Y + 0.8, SVC_Y - 0.8],   showgrid: false, zeroline: false, visible: false,  // inverted!
+                scaleanchor: 'x2', scaleratio: 1 },
+
+      shapes: [
+        ...courtShapes('x',  'y'),
+        ...courtShapes('x2', 'y2'),
+      ],
+
+      annotations: [
+        ...courtAnnotations('x',  'y'),
+        ...courtAnnotations('x2', 'y2'),
+        ...subplotTitles,
+      ],
+    };
+
+    Plotly.newPlot('chart', traces, layout, {
+      responsive: true,
+      displayModeBar: true,
+      modeBarButtonsToRemove: ['select2d', 'lasso2d', 'autoScale2d'],
+      displaylogo: false
+    });
+  </script>
+</body>
+</html>
