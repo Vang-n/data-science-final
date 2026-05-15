@@ -1,3 +1,7 @@
+---
+layout: default
+---
+
 # Tennis Match Analysis Project
 
 ## Overview
