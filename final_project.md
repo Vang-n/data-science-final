@@ -40,7 +40,11 @@ Another area I explored was exactly where my serves are landing.
 
 **Coding note:** I used a KDE (Kernel Density Estimate) heatmap layered on top of a drawn service box to show where my serves cluster. The service box coordinates required careful calibration to match SwingVision's coordinate system, which turned out to be one of the harder parts of this project.
 
-![Serve Heatmap](images/serve_heatmap.png)
+<iframe src="serve_plot.html"
+width="100%"
+height="650"
+frameborder="0">
+</iframe>
 
 **Heatmap:** Ideally the hot zones would shift toward the wide corners of each service box, which would match the direction data showing out wide is my highest win % serve. Instead, most of my serves cluster toward the middle of the service box, and when they do skew wide, it's inconsistent. This gap between what works and what I actually do is one of the most actionable findings in this entire analysis. I need to be more intentional about targeting the wide corners rather than defaulting to the center of the box.
 
