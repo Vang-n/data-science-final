@@ -10,7 +10,7 @@ This project analyzes personal match data using Swing Vision, a tennis tracking 
 
 ### How Tennis Is Scored
 
-A general rule of thumb is the useful framework for thinking about tennis strategy with the **51% rule**: you do not need to win every point, you just need to win slightly more than you lose... i.e. 51% of the points. Of course, this is not a rule that guarantees a win, however, its a high indicator and when broken down like this, tennis is much more digestable.  If a strategy wins you the point 51% of the time, keep doing it. If it only works 49% of the time, you shouldn't continue. This sounds simple but it has a big impact on decision-making during a match, meaning every shot choice should be evaluated not on whether it worked once, but on whether it works consistently over time.
+A general rule of thumb for thinking about tennis strategy is the **51% rule**: you do not need to win every point, you just need to win slightly more than you lose, i.e. 51% of the points. Of course, this is not a rule that guarantees a win, however, its a high indicator and when broken down like this, tennis is much more digestable.  If a strategy wins you the point 51% of the time, keep doing it. If it only works 49% of the time, you should look for a different strategy. This sounds simple but it has a big impact on decision-making during a match, meaning every shot choice should be evaluated not on whether it worked once, but on whether it works consistently over time.
 
 ---
 
