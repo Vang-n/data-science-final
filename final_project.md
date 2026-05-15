@@ -40,7 +40,7 @@ Another area I explored was exactly where my serves are landing.
 
 **Coding note:** I used a KDE (Kernel Density Estimate) heatmap layered on top of a drawn service box to show where my serves cluster. The service box coordinates required careful calibration to match SwingVision's coordinate system, which turned out to be one of the harder parts of this project.
 
-<iframe src="serve_plot.html"
+<iframe src="serve_heatmap_interactive.html"
 width="100%"
 height="650"
 frameborder="0">
