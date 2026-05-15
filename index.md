@@ -6,7 +6,7 @@ This project analyzes my personal tennis match data collected through SwingVisio
 ---
 
 ## Project Notebook
-[Main Project Notebook](Draft_final.ipynb)
+[Main Project Notebook](Final_Project_Codel.ipynb)
 
 ---
 
@@ -21,8 +21,6 @@ This project analyzes my personal tennis match data collected through SwingVisio
 ### Week 14
 [Week 14 Update](week14_update.md)
 
-###Colab Notebook
-[Main Notebook](Draft_final.ipynb)
 
 ---
 
