@@ -10,7 +10,7 @@ This project analyzes my personal tennis match data collected through SwingVisio
 ---
 
 ## Project Notebook
-[Main Project Notebook](Final_Project_Codel.ipynb)
+[[Main Notebook](https://github.com/Vang-n/data-science-final/blob/main/Final_Project_Code.ipynb)
 
 ---
 
