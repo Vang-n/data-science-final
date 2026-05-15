@@ -21,7 +21,6 @@ This project analyzes my personal tennis match data collected through SwingVisio
 ### Week 14
 [Week 14 Update](week14_update.md)
 
-
 ---
 
 ## Topics Explored
