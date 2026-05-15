@@ -1,3 +1,8 @@
+---
+layout: default
+title: Week 14 Update
+---
+
 # Week 14 Update
 
 ### Project Progress
