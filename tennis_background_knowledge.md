@@ -30,6 +30,8 @@ Understanding where shots land is central to this project. Here are the key term
 
 **Down the T** — on a serve, a ball aimed at the center line of the service box. This is called "the T" because of the shape the center and service lines form.
 
+**Unforced Errors** - An unforced error is a mistake made by a player during a rally that is not primarily caused by an especially difficult shot from the opponent. These errors are important because they can reveal patterns in consistency, shot selection, and risk-taking throughout a match.
+
 **Volley** — a type of stroke hit before the ball bounces, typically when a player has moved up to the net.
 
 **Drop shot** — a type of stroke hit shot designed to land just over the net and bounce very short, forcing the opponent to sprint forward.
