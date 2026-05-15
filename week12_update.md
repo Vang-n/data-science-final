@@ -1,3 +1,7 @@
+---
+layout: default
+---
+
 ## Week 12 Update
 
 ### Exploratory Analysis & Visualizations
