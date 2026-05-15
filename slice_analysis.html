@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Backhand Slice Analysis</title>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0b1a24;
+      --surface:   #112233;
+      --border:    #1e3a50;
+      --text:      #d4e9f7;
+      --muted:     #5a8ba8;
+      --gold:      #f0c040;
+      --blue:      #4a9fd4;
+      --green:     #4cba7a;
+      --coral:     #e0705a;
+      --darkred:   #b03030;
+      --gray:      #6a7a88;
+    }
+
+    body {
+      background: var(--bg);
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text);
+      padding: 32px 20px 48px;
+      min-height: 100vh;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    header h1 {
+      font-size: 1.45rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      color: #fff;
+    }
+
+    header p {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-top: 6px;
+      font-family: 'DM Mono', monospace;
+    }
+
+    .charts-row {
+      display: flex;
+      gap: 20px;
+      max-width: 1000px;
+      margin: 0 auto;
+      flex-wrap: wrap;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px 16px 12px;
+      flex: 1;
+      min-width: 280px;
+    }
+
+    .card h2 {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+      font-family: 'DM Mono', monospace;
+    }
+
+    /* Legend for chart 2 */
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.74rem;
+      color: var(--muted);
+      font-family: 'DM Mono', monospace;
+    }
+
+    .legend-dot {
+      width: 10px; height: 10px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    /* Tooltip override area */
+    .tooltip-hint {
+      text-align: center;
+      font-size: 0.73rem;
+      color: var(--muted);
+      margin-top: 18px;
+      font-family: 'DM Mono', monospace;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Backhand Slice Sequence Analysis</h1>
+  <p>Hover bars for exact values · n=164 total slices across 11 matches</p>
+</header>
+
+<div class="charts-row">
+
+  <!-- Chart 1: Win % by slice type -->
+  <div class="card">
+    <h2>Win % by Slice Type</h2>
+    <div id="chart1"></div>
+  </div>
+
+  <!-- Chart 2: Stacked outcomes -->
+  <div class="card">
+    <h2>What Happens After Each Slice?</h2>
+    <div id="chart2"></div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#f0c040"></div>Slice Winner</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#4a9fd4"></div>Opponent Error</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#4cba7a"></div>Short Ball</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#e0705a"></div>Deep Ball</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#b03030"></div>Slice Error</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#6a7a88"></div>Other</div>
+    </div>
+  </div>
+
+</div>
+
+<p class="tooltip-hint">↑ hover any bar to see the exact breakdown</p>
+
+<script>
+// ── DATA ─────────────────────────────────────────────────────────────
+const sliceTypes = ['Short Line', 'Deep Line', 'Deep Cross', 'Short Cross'];
+const winRates   = [75.0, 59.3, 55.9, 46.2];   // %
+const counts     = [20, 59, 59, 26];
+const avgWin     = (75.0*20 + 59.3*59 + 55.9*59 + 46.2*26) / (20+59+59+26);
+
+// Stacked outcome data (%)
+const outcomes = {
+  'Deep Ball (Defensive)':    [45.0, 50.8, 54.2, 19.2],
+  'Opponent Error':           [25.0, 15.3, 15.3, 19.2],
+  'Short Ball (Attackable)':  [10.0, 22.0, 25.4, 34.6],
+  'Slice Error':              [15.0,  6.8,  0.0, 19.2],
+  'Slice Winner':             [ 5.0,  5.1,  5.1,  0.0],
+  'Other':                    [ 0.0,  0.0,  0.0,  7.7],
+};
+
+const outcomeColors = {
+  'Deep Ball (Defensive)':    '#e0705a',
+  'Opponent Error':           '#4a9fd4',
+  'Short Ball (Attackable)':  '#4cba7a',
+  'Slice Error':              '#b03030',
+  'Slice Winner':             '#f0c040',
+  'Other':                    '#6a7a88',
+};
+
+// ── CHART 1: Win % bar chart ─────────────────────────────────────────
+const barColors = winRates.map(w => w >= avgWin ? '#4a9fd4' : '#e0705a');
+
+const chart1Traces = [
+  {
+    type: 'bar',
+    x: sliceTypes,
+    y: winRates,
+    marker: {
+      color: barColors,
+      line: { color: '#0b1a24', width: 1.5 }
+    },
+    text: sliceTypes.map((_, i) => `${winRates[i].toFixed(1)}%<br><span style="font-size:11px">n=${counts[i]}</span>`),
+    textposition: 'outside',
+    textfont: { family: 'DM Mono', size: 12, color: '#d4e9f7' },
+    hovertemplate: '<b>%{x}</b><br>Win Rate: %{y:.1f}%<br>Points: ' +
+      counts.map(c => c).join('·') + // placeholder — overridden per bar below
+      '<extra></extra>',
+    customdata: counts,
+    hovertemplate: '<b>%{x}</b><br>Win Rate: %{y:.1f}%<br>Sample size: %{customdata}<extra></extra>',
+  },
+  {
+    // Average line as a scatter with shape
+    type: 'scatter',
+    x: [sliceTypes[0], sliceTypes[sliceTypes.length - 1]],
+    y: [avgWin, avgWin],
+    mode: 'lines',
+    line: { color: 'rgba(255,255,255,0.4)', width: 1.5, dash: 'dash' },
+    hovertemplate: `Avg win %: ${avgWin.toFixed(1)}%<extra></extra>`,
+    name: `Avg ${avgWin.toFixed(1)}%`,
+    showlegend: false,
+  }
+];
+
+const layout1 = {
+  paper_bgcolor: 'transparent',
+  plot_bgcolor:  'transparent',
+  margin: { t: 30, b: 10, l: 40, r: 10 },
+  height: 310,
+  yaxis: {
+    range: [0, 105],
+    ticksuffix: '%',
+    gridcolor: '#1e3a50',
+    tickfont: { family: 'DM Mono', size: 11, color: '#5a8ba8' },
+    tickcolor: 'transparent',
+    linecolor: 'transparent',
+  },
+  xaxis: {
+    tickfont: { family: 'DM Sans', size: 12, color: '#d4e9f7' },
+    tickcolor: 'transparent',
+    linecolor: '#1e3a50',
+  },
+  annotations: [{
+    text: `avg ${avgWin.toFixed(1)}%`,
+    x: 1, xref: 'paper',
+    y: avgWin, yref: 'y',
+    xanchor: 'right', yanchor: 'bottom',
+    showarrow: false,
+    font: { family: 'DM Mono', size: 10, color: 'rgba(255,255,255,0.4)' }
+  }],
+  hoverlabel: {
+    bgcolor: '#1a3348',
+    bordercolor: '#2e5575',
+    font: { family: 'DM Mono', size: 12, color: '#d4e9f7' }
+  }
+};
+
+Plotly.newPlot('chart1', chart1Traces, layout1, { responsive: true, displayModeBar: false });
+
+// ── CHART 2: Stacked bar ─────────────────────────────────────────────
+const stackOrder = ['Slice Winner', 'Opponent Error', 'Short Ball (Attackable)', 'Deep Ball (Defensive)', 'Slice Error', 'Other'];
+
+const chart2Traces = stackOrder
+  .filter(name => outcomes[name])
+  .map(name => ({
+    type: 'bar',
+    name,
+    x: sliceTypes,
+    y: outcomes[name],
+    marker: {
+      color: outcomeColors[name],
+      line: { color: '#0b1a24', width: 1 }
+    },
+    hovertemplate: `<b>${name}</b><br>%{x}: %{y:.1f}%<extra></extra>`,
+    showlegend: false,
+  }));
+
+const layout2 = {
+  barmode: 'stack',
+  paper_bgcolor: 'transparent',
+  plot_bgcolor:  'transparent',
+  margin: { t: 10, b: 10, l: 40, r: 10 },
+  height: 310,
+  yaxis: {
+    range: [0, 105],
+    ticksuffix: '%',
+    gridcolor: '#1e3a50',
+    tickfont: { family: 'DM Mono', size: 11, color: '#5a8ba8' },
+    tickcolor: 'transparent',
+    linecolor: 'transparent',
+  },
+  xaxis: {
+    tickfont: { family: 'DM Sans', size: 12, color: '#d4e9f7' },
+    tickcolor: 'transparent',
+    linecolor: '#1e3a50',
+  },
+  hoverlabel: {
+    bgcolor: '#1a3348',
+    bordercolor: '#2e5575',
+    font: { family: 'DM Mono', size: 12, color: '#d4e9f7' }
+  }
+};
+
+Plotly.newPlot('chart2', chart2Traces, layout2, { responsive: true, displayModeBar: false });
+</script>
+</body>
+</html>
