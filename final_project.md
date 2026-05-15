@@ -109,7 +109,11 @@ This section looks at my backhand slice in detail. I broke it into four tactical
 
 **Coding note:** The most complex part here was building the 3-shot sequence: my slice → opponent's response → what I do next. I looped through each slice, looked it up in the full match data (including opponent shots), and classified the opponent's response into categories like "Opponent Error", "Short Ball (Attackable)", and "Deep Ball (Defensive)". This kind of sequence analysis is harder than simple win/loss because it requires matching shot records across both players.
 
-![Backhand Slice Chart](images/bhslice_chart.png)
+<iframe src="slice_analysis.html"
+width="100%"
+height="650"
+frameborder="0">
+</iframe>
 
 **Backhand Slice Effectiveness:** The data identifies the Short Line slice as my most effective variation with a 75.0% win rate. The "What Happens After" chart explains why as this shot induces the highest rate of immediate Opponent Errors and outright Slice Winners. By bringing my opponent forward and out of their comfort zone on the line, I am forcing errors rather than simply neutralizing the point. In contrast, the Short Cross slice is my least effective at 46.2%, primarily because it leaves a large portion of the court open for an attackable reply.
 
