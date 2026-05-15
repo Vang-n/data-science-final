@@ -47,3 +47,6 @@ I hit **slice on every backhand** meaning I do not hit topspin backhands at all.
 My general strategy is to **control points with my forehand** and use that to set up a finish: either coming to the net for a volley, drawing the opponent short with a drop shot, or forcing an error by mixing in slice at unexpected moments. The variety is intentional: changing pace, spin, and direction keeps opponents from settling into a rhythm.
 
 This style means the most important sections of this analysis are not just win/loss numbers, but the *tactical context* . Understanding this justifies my general theme of wanting to analyze what shots lead to good outcomes, when drop shots and slices work, and whether the variety is actually translating into points won.
+
+
+Okay, great! Now that you're a tennis expert we can return to the data findings [Final Project](final_project.md) 
