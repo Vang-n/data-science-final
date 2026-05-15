@@ -36,7 +36,7 @@ One of the first questions I wanted to explore was whether my first serve actual
 
 # Serve Placement Heatmap
 
-Another area I explored was exactly where my serves are landing.
+Another area I explored was exactly where my serves are landing. I wanted analyze this part in addition to the other data so I can see where I've been serving and if that correlates with what is statistically optimal. 
 
 **Coding note:** I used a KDE (Kernel Density Estimate) heatmap layered on top of a drawn service box to show where my serves cluster. The service box coordinates required careful calibration to match SwingVision's coordinate system, which turned out to be one of the harder parts of this project.
 
