@@ -11,7 +11,7 @@ This project analyzes personal tennis match data collected through SwingVision i
 
 The goal of this project is to use data science techniques to identify what strategies contribute most to winning points and where improvements can be made.
 
-However, to understand this project for non-tennis fans, I've created a brief but hopefully useful quick guide to the language used to understand this project better. 
+However, to understand this project for non-tennis fans, I've created a brief but hopefully useful guide for the terminology.
 [Tennis Background Information](tennis_background_knowledge.md)
 
 ---
