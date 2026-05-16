@@ -27,3 +27,4 @@
 - Pandas
 - Plotly
 - Google Colab
+- Google Gemini (sparingly)
